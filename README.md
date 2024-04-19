@@ -21,11 +21,11 @@ int readInt(); // returns the user's integer intput
 void readChar(); // reads a string from the user
 void generateBooked(Rooms list[]); // generates random booked rooms
 void staff_menu(Rooms list[]); 
-void guest_menu();
+void guest_menu(Rooms list[]);
 void view_availability();
 void add_room(Rooms list[]);
 void remove_room();
-void book_room();
+void book_room(Rooms list[]);
 void change_rooms();
 void view_bookings();
 
@@ -37,12 +37,12 @@ int main()
     Rooms list[size];
     generateBooked(list);
     printArray(list);
-    int ans;
     printf("Are you a Staff (0) or Guest (1)? ");
-    if (readInt() == Staff)
+    int ans = readInt();
+    if (ans == Staff)
         staff_menu(list);
-    else if (readInt() == Guest)
-        guest_menu();
+    else if (ans == Guest)
+        guest_menu(list);
         
     return 0;
 }
@@ -54,8 +54,9 @@ int readInt()
 }
 void readChar(char string[])
 {
-    for (int x = 0; x < 40; x++) 
+    for (int x = 0; x < 20; x++) 
     { 
+        printf("WHAT\n");
         scanf("%c", (string + x) ); 
         if ( *(string + x) == '\n' ) 
         {
@@ -95,7 +96,7 @@ void staff_menu(Rooms list[])
             break;
     }
 }
-void guest_menu()
+void guest_menu(Rooms list[])
 {
         int answer;
     printf("\nWhat would you like to do?\n\n");
@@ -104,7 +105,7 @@ void guest_menu()
     switch(answer)
     {
         case BookRoom: 
-            book_room();
+            book_room(list);
             break;
         
         case ChangeRoom:
@@ -121,6 +122,33 @@ void view_availability()
     printf("\nAt 'view_availability' function"); // used for testing
 }
 void add_room(Rooms list[])
+{
+    printf("What room would you like to add? ");
+    int ans = readInt() - 1;
+    while(check_booking(list, ans) != Open || ans > size)
+    {
+        if(check_booking(list, ans) == Reserved)
+            printf("Sorry. That room is already booked. ");
+        
+        else
+            printf("Out of range.");
+        
+        ans = readInt() - 1;
+    }
+    list[ans].booked = Reserved;
+    /* 
+    printf("What name should the room be under? \n");
+    readChar(list[ans].name);
+    printf("%s \n", list[ans].name);
+    */
+    printf("\nSuccessfully added you to room %d \n", ans + 1);
+    staff_menu(list);
+}
+void remove_room()
+{
+    printf("\nAt 'remove_room' function"); // used for testing
+}
+void book_room(Rooms list[])
 {
     printf("What room do you want to book (1 - %d)? ", size);
     int ans = readInt() - 1;
@@ -139,15 +167,7 @@ void add_room(Rooms list[])
     }
     list[ans].booked = User;
     printf("\nSuccessfully added you to room %d \n", ans + 1);
-    staff_menu(list);
-}
-void remove_room()
-{
-    printf("\nAt 'remove_room' function"); // used for testing
-}
-void book_room()
-{
-    printf("\nAt 'book_room' function"); // used for testing
+    guest_menu(list);
 }
 void change_rooms()
 {
